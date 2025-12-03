@@ -2,6 +2,7 @@ use bytes::Bytes;
 use quinn::{Endpoint, ServerConfig, TransportConfig, VarInt};
 use rustls::pki_types::PrivateKeyDer;
 use std::{
+    array,
     net::{IpAddr, Ipv6Addr, SocketAddr},
     sync::Arc,
 };
@@ -37,7 +38,7 @@ async fn main() {
 
     while let Some(connecting) = server.accept().await {
         let conn = connecting.await.unwrap();
-        let mut chunks = vec![Bytes::new(); 10];
+        let mut chunks: [Bytes; 4] = array::from_fn(|_| Bytes::new());
 
         tokio::task::spawn(async move {
             loop {
@@ -45,7 +46,6 @@ async fn main() {
                     Ok(mut recv_stream) => loop {
                         match recv_stream.read_chunks(&mut chunks).await {
                             Ok(n) => {
-                                dbg!("got some data");
                                 if n.is_none() {
                                     break;
                                 }
