@@ -36,10 +36,6 @@ async fn main() {
                 let mut send_stream = conn.open_uni().await.unwrap();
 
                 send_stream.write_all(&[0_u8; 1000]).await.unwrap();
-
-                send_stream.finish().unwrap();
-
-                _ = send_stream.stopped().await;
             }
         });
 
@@ -50,6 +46,6 @@ async fn main() {
         task.await.unwrap();
 
         done += 1;
+        dbg!(done);
     }
-    dbg!(done);
 }
