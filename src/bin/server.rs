@@ -1,17 +1,21 @@
 use bytes::Bytes;
-use quinn::{Endpoint, ServerConfig, TransportConfig, VarInt};
+use quinn::{Endpoint, IdleTimeout, ServerConfig, TransportConfig, VarInt};
 use rustls::pki_types::PrivateKeyDer;
 use std::{
     array,
     net::{IpAddr, Ipv6Addr, SocketAddr},
     sync::Arc,
+    time::Duration,
 };
 
 #[tokio::main]
 async fn main() {
     let mut transport_config = TransportConfig::default();
 
-    transport_config.max_concurrent_uni_streams(VarInt::from_u32(1000));
+    let timeout = IdleTimeout::try_from(Duration::from_secs(100)).unwrap();
+    transport_config.max_idle_timeout(Some(timeout));
+
+    transport_config.max_concurrent_uni_streams(VarInt::from_u32(100000));
 
     let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
 
