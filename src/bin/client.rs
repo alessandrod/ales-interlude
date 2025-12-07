@@ -28,6 +28,7 @@ async fn main() {
     client_config.transport_config(transport_config);
 
     let mut tasks = Vec::new();
+    let streams = 100_000; // 10m streams
 
     for _ in 0..100 {
         let client = client.clone();
@@ -40,7 +41,7 @@ async fn main() {
                 .await
                 .unwrap();
 
-            for _ in 0..100_000 {
+            for _ in 0..streams {
                 let mut send_stream = conn.open_uni().await.unwrap();
 
                 send_stream.write_all(&[0_u8; 1000]).await.unwrap();
