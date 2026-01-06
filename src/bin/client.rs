@@ -54,4 +54,5 @@ async fn send_streams(client: Arc<Endpoint>, client_config: ClientConfig, server
 
         task.await.unwrap();
     }
+    tokio::time::sleep(Duration::from_secs(5)).await;
 }

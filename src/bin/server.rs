@@ -47,22 +47,16 @@ async fn main() {
 
 async fn handle_connection(conn: Connection, mut chunks: [Bytes; 4]) {
     tokio::task::spawn(async move {
-        let mut passes = 0;
-        let mut fails = 0;
-
         loop {
             match conn.accept_uni().await {
                 Ok(mut recv_stream) => loop {
                     match recv_stream.read_chunks(&mut chunks).await {
                         Ok(n) => {
                             if n.is_none() {
-                                passes += 1;
                                 break;
                             }
                         }
                         Err(_e) => {
-                            fails += 1;
-                            // dbg!(_e);
                             break;
                         }
                     }
@@ -70,9 +64,5 @@ async fn handle_connection(conn: Connection, mut chunks: [Bytes; 4]) {
                 Err(_) => break,
             }
         }
-
-        println!("passes {}", passes);
-        println!("fails {}", fails);
-        println!("this much fails {}", (fails * 100) / 20000);
     });
 }
