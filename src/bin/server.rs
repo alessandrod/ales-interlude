@@ -40,24 +40,27 @@ async fn main() {
 
     while let Some(connecting) = server.accept().await {
         let conn = connecting.await.unwrap();
-        let chunks: [Bytes; 4] = array::from_fn(|_| Bytes::new());
-        handle_connection(conn, chunks).await;
+
+        handle_connection(conn).await;
     }
 }
 
-async fn handle_connection(conn: Connection, mut chunks: [Bytes; 4]) {
+async fn handle_connection(conn: Connection) {
+    let mut chunks: [Bytes; 4] = array::from_fn(|_| Bytes::new());
     tokio::task::spawn(async move {
         loop {
             match conn.accept_uni().await {
                 Ok(mut recv_stream) => loop {
-                    match recv_stream.read_chunks(&mut chunks).await {
-                        Ok(n) => {
-                            if n.is_none() {
+                    loop {
+                        match recv_stream.read_chunks(&mut chunks).await {
+                            Ok(n) => {
+                                if n.is_none() {
+                                    break;
+                                }
+                            }
+                            Err(_e) => {
                                 break;
                             }
-                        }
-                        Err(_e) => {
-                            break;
                         }
                     }
                 },
