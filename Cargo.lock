@@ -473,6 +473,7 @@ dependencies = [
 [[package]]
 name = "quinn"
 version = "0.12.0"
+source = "git+https://github.com/Perelyn-sama/quinn.git?branch=improve-recvstream-drop#f9c0a437b53b23fccafd837703cd8bd179b903a0"
 dependencies = [
  "bytes",
  "cfg_aliases",
@@ -491,6 +492,7 @@ dependencies = [
 [[package]]
 name = "quinn-proto"
 version = "0.12.0"
+source = "git+https://github.com/Perelyn-sama/quinn.git?branch=improve-recvstream-drop#f9c0a437b53b23fccafd837703cd8bd179b903a0"
 dependencies = [
  "bytes",
  "fastbloom",
@@ -512,6 +514,7 @@ dependencies = [
 [[package]]
 name = "quinn-udp"
 version = "0.6.0"
+source = "git+https://github.com/Perelyn-sama/quinn.git?branch=improve-recvstream-drop#f9c0a437b53b23fccafd837703cd8bd179b903a0"
 dependencies = [
  "cfg_aliases",
  "libc",

@@ -12,7 +12,7 @@ use std::{
 async fn main() {
     let mut transport_config = TransportConfig::default();
 
-    let timeout = IdleTimeout::try_from(Duration::from_secs(100)).unwrap();
+    let timeout = IdleTimeout::try_from(Duration::from_secs(10)).unwrap();
     transport_config.max_idle_timeout(Some(timeout));
 
     transport_config.max_concurrent_uni_streams(VarInt::from_u32(100000));
@@ -38,7 +38,12 @@ async fn main() {
 
     let server = Endpoint::server(server_config, addr).unwrap();
 
-    while let Some(connecting) = server.accept().await {
+    loop {
+        eprintln!("waiting for connection");
+        let Some(connecting) = server.accept().await else {
+            break;
+        };
+        eprintln!("accepted connection");
         let conn = connecting.await.unwrap();
 
         handle_connection(conn).await;
@@ -51,16 +56,15 @@ async fn handle_connection(conn: Connection) {
         loop {
             match conn.accept_uni().await {
                 Ok(mut recv_stream) => loop {
-                    loop {
-                        match recv_stream.read_chunks(&mut chunks).await {
-                            Ok(n) => {
-                                if n.is_none() {
-                                    break;
-                                }
-                            }
-                            Err(_e) => {
+                    match recv_stream.read_chunks(&mut chunks).await {
+                        Ok(n) => {
+                            if n.is_none() {
                                 break;
                             }
+                        }
+                        Err(e) => {
+                            eprintln!("error reading stream {e:?}");
+                            break;
                         }
                     }
                 },

@@ -3,11 +3,14 @@ name = "ales-interlude"
 version = "0.1.0"
 edition = "2024"
 
+[profile.release]
+debug = 2
+
 [dependencies]
 bytes = "1.11.0"
-# quinn = "0.11.9"
-# quinn= {git = "https://github.com/Perelyn-sama/quinn.git", branch = "improve-recvstream-drop"}
-quinn = { path = "./crates/quinn/quinn" }
+#quinn = "0.11.9"
+quinn= {git = "https://github.com/Perelyn-sama/quinn.git", branch = "improve-recvstream-drop"}
+#quinn = { path = "../quinn/quinn" }
 rcgen = "0.14.5"
 rustls = "0.23.35"
 tokio = { version = "1.48.0", features = ["full"] }

@@ -34,24 +34,30 @@ async fn main() {
 async fn send_streams(client: Arc<Endpoint>, client_config: ClientConfig, server_addr: SocketAddr) {
     let streams = 20_000; // 2m streams
 
-    for _ in 0..100 {
+    let mut tasks = Vec::new();
+    for _ in 0..8 {
         let client = client.clone();
         let client_config = client_config.clone();
 
         let task = tokio::task::spawn(async move {
+            eprintln!("connecting to server");
             let conn = client
                 .connect_with(client_config, server_addr, "localhost")
                 .unwrap()
                 .await
                 .unwrap();
+            eprintln!("connected to server");
 
-            for _ in 0..streams {
+            loop {
                 let mut send_stream = conn.open_uni().await.unwrap();
-
-                send_stream.write_all(&[0_u8; 1000]).await.unwrap();
+                send_stream.write_all(&[0_u8; 255]).await.unwrap();
             }
         });
 
+        tasks.push(task);
+    }
+
+    for task in tasks {
         task.await.unwrap();
     }
     tokio::time::sleep(Duration::from_secs(5)).await;
